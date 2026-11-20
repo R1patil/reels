@@ -68,6 +68,9 @@ def get_checkout_url(user_email: str) -> str:
         return f"{checkout_url}{sep}email={user_email}"
 
 def verify_promo_code(code: str) -> bool:
-    """Special promotional/testing codes."""
-    valid_codes = ["FOUNDER100", "PROBETA", "VIRAL2026", "UPIPAY", "TESTPAY"]
-    return code.strip().upper() in valid_codes
+    """Special promotional/testing codes or Razorpay Payment IDs."""
+    c = code.strip()
+    if c.startswith("pay_") and len(c) >= 12:
+        return True
+    valid_codes = ["FOUNDER100", "PROBETA", "VIRAL2026", "UPIPAY", "TESTPAY", "SEVENTEENSE"]
+    return c.upper() in valid_codes

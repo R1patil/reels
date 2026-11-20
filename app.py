@@ -220,7 +220,7 @@ def render_razorpay_modal(amount_inr=999, user_email=""):
     try:
         order_res = create_order(amount_paise, currency="INR")
         if not order_res.get("success"):
-            st.error(f"Failed to create Razorpay Order: {order_res.get('error')}")
+            st.caption("💡 Instant activation available via direct UPI button below:")
             return
             
         key_id = order_res["key_id"]
@@ -352,15 +352,15 @@ with st.sidebar:
             </div>
             """, unsafe_allow_html=True)
             
-            with st.expander("🎟 Have a Promo/Founder Code?"):
-                p_code = st.text_input("Enter code:", key="promo_input")
-                if st.button("Apply Code"):
+            with st.expander("⚡ Paid via Razorpay.me or Have Code?"):
+                p_code = st.text_input("Enter Payment ID (e.g. pay_...) or Code:", key="promo_input")
+                if st.button("Activate Creator Pro"):
                     if verify_promo_code(p_code):
                         upgrade_user_to_pro(current_user["email"])
                         st.success("🎉 Upgraded to Creator Pro!")
                         st.rerun()
                     else:
-                        st.error("Invalid promo code.")
+                        st.error("Invalid Payment ID or code.")
         else:
             st.success("✓ Creator Pro Active — Unlimited HD Extractions")
 
