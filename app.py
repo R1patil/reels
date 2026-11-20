@@ -123,12 +123,15 @@ st.markdown("""
 
 cfg = load_config()
 
-# Initialize Session State
+# Initialize Session State (visitors start logged out so they can sign up or log in)
 if "logged_in_user" not in st.session_state:
-    st.session_state["logged_in_user"] = get_user_by_email("founder@reelviral.com") or get_user_by_email("demo@creator.com")
-    if not st.session_state["logged_in_user"]:
-        reg = register_user("founder@reelviral.com", "founder123")
-        st.session_state["logged_in_user"] = reg.get("user")
+    st.session_state["logged_in_user"] = None
+
+# Ensure founder account is pre-registered in DB for the owner
+founder = get_user_by_email("founder@reelviral.com")
+if not founder:
+    register_user("founder@reelviral.com", "founder123")
+    upgrade_user_to_pro("founder@reelviral.com")
 
 current_user = st.session_state.get("logged_in_user")
 
@@ -476,12 +479,15 @@ if current_user:
 analyze_btn = st.button("🚀 Extract High-Virality Reels", type="primary", use_container_width=True, disabled=not can_extract)
 
 if analyze_btn and can_extract:
-    # 1. Quota Check & Record
-    if current_user:
-        usage = record_extraction_usage(current_user["email"])
-        if not usage["allowed"]:
-            st.error(usage["error"])
-            st.stop()
+    # 1. Require Login & Quota Check
+    if not current_user:
+        st.warning("👉 Please **Create an Account** or **Log In** in the left sidebar to start extracting reels! (2 Free Extractions included)")
+        st.stop()
+        
+    usage = record_extraction_usage(current_user["email"])
+    if not usage["allowed"]:
+        st.error(usage["error"])
+        st.stop()
             
     # 2. Extract Transcript
     if input_mode == "🔗 YouTube Video URL":
