@@ -9,6 +9,12 @@ from ai_service import (
     parse_ai_json_response
 )
 from video_clipper import cut_clip_with_ytdlp
+import auth_service
+import importlib
+try:
+    importlib.reload(auth_service)
+except Exception:
+    pass
 from auth_service import (
     register_user,
     login_user,
