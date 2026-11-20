@@ -323,6 +323,13 @@ with st.sidebar:
             st.warning("You are on the **Starter (Free)** plan.")
             st.markdown("### ⚡ Upgrade to Pro (₹999/mo)")
             render_razorpay_modal(amount_inr=999, user_email=current_user["email"])
+            st.markdown("""
+            <div style="text-align: center; margin-top: 6px; margin-bottom: 12px;">
+                <a href="https://razorpay.me/@seventeense" target="_blank" style="display: block; background: #0c2340; color: #fff; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: 600; border: 1px solid #2563eb;">
+                    📱 Pay via UPI / Razorpay.me (@seventeense)
+                </a>
+            </div>
+            """, unsafe_allow_html=True)
             
             with st.expander("🎟 Have a Promo/Founder Code?"):
                 p_code = st.text_input("Enter code:", key="promo_input")
@@ -456,7 +463,14 @@ if current_user:
         """, unsafe_allow_html=True)
         # Render the Standard Razorpay Checkout Button right inside the paywall
         render_razorpay_modal(amount_inr=999, user_email=current_user["email"])
-        st.markdown("<p style='text-align: center; font-size: 0.85rem; color: #9ca3af;'>Powered by Razorpay Standard Checkout. Instant activation.</p>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align: center; margin-top: 8px; margin-bottom: 12px;">
+            <a href="https://razorpay.me/@seventeense" target="_blank" style="display: inline-block; background: #0c2340; color: #fff; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-size: 1rem; font-weight: 600; border: 1px solid #2563eb;">
+                📱 Or Pay ₹999 directly via UPI / Card (razorpay.me/@seventeense)
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-size: 0.85rem; color: #9ca3af;'>Powered by Razorpay. Instant activation.</p>", unsafe_allow_html=True)
 
 # Execution Button
 analyze_btn = st.button("🚀 Extract High-Virality Reels", type="primary", use_container_width=True, disabled=not can_extract)

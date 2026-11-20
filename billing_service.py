@@ -5,7 +5,7 @@ from typing import Dict, Any
 CONFIG_FILE = "config.json"
 
 # Default payment link (supports Razorpay, Cosmofeed, Instamojo, Cashfree, or Stripe)
-DEFAULT_CHECKOUT_URL = "https://rzp.io"
+DEFAULT_CHECKOUT_URL = "https://razorpay.me/@seventeense"
 
 PLAN_DETAILS = {
     "free": {
