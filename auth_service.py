@@ -297,3 +297,45 @@ def upgrade_user_to_pro(email: str) -> bool:
         cnt = cursor.rowcount
         conn.close()
         return cnt > 0
+
+def reset_user_password(email: str, new_password: str) -> Dict[str, Any]:
+    """Allows users to reset their password."""
+    email = email.strip().lower()
+    if not email or "@" not in email:
+        return {"success": False, "error": "Please enter a valid email address."}
+    if len(new_password) < 6:
+        return {"success": False, "error": "New password must be at least 6 characters long."}
+        
+    pw_hash = hash_password(new_password)
+    
+    if is_supabase_enabled():
+        sb_url, sb_key = get_supabase_credentials()
+        check_url = f"{sb_url}/rest/v1/users?email=eq.{email}&select=id"
+        try:
+            r_check = requests.get(check_url, headers=supabase_headers(sb_key), timeout=10)
+            if r_check.status_code == 200:
+                rows = r_check.json()
+                if not rows:
+                    return {"success": False, "error": "No account found with this email."}
+            
+            patch_url = f"{sb_url}/rest/v1/users?email=eq.{email}"
+            r_patch = requests.patch(patch_url, json={"password_hash": pw_hash}, headers=supabase_headers(sb_key), timeout=10)
+            if r_patch.status_code in (200, 204):
+                return {"success": True, "message": "Password updated successfully! You can now log in."}
+            else:
+                return {"success": False, "error": "Failed to update password. Please try again."}
+        except Exception as e:
+            return {"success": False, "error": f"Connection error: {str(e)}"}
+    else:
+        init_local_db()
+        conn = get_local_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET password_hash = ? WHERE email = ?", (pw_hash, email))
+        conn.commit()
+        cnt = cursor.rowcount
+        conn.close()
+        if cnt > 0:
+            return {"success": True, "message": "Password updated successfully! You can now log in."}
+        else:
+            return {"success": False, "error": "No account found with this email."}
+

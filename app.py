@@ -12,6 +12,7 @@ from video_clipper import cut_clip_with_ytdlp
 from auth_service import (
     register_user,
     login_user,
+    reset_user_password,
     get_user_by_email,
     record_extraction_usage,
     upgrade_user_to_pro,
@@ -295,7 +296,7 @@ with st.sidebar:
     st.header("👤 Account & Billing")
     
     if not current_user:
-        auth_tab1, auth_tab2 = st.tabs(["🔑 Log In", "📝 Sign Up"])
+        auth_tab1, auth_tab2, auth_tab3 = st.tabs(["🔑 Log In", "📝 Sign Up", "🔄 Forgot Password"])
         with auth_tab1:
             log_email = st.text_input("Email", key="login_email")
             log_pass = st.text_input("Password", type="password", key="login_pass")
@@ -318,6 +319,17 @@ with st.sidebar:
                     st.rerun()
                 else:
                     st.error(res["error"])
+
+        with auth_tab3:
+            st.caption("Reset your password:")
+            rst_email = st.text_input("Your Registered Email", key="rst_email")
+            rst_new_pw = st.text_input("New Password (min 6 chars)", type="password", key="rst_new_pw")
+            if st.button("Update Password", type="primary", use_container_width=True):
+                res_rst = reset_user_password(rst_email, rst_new_pw)
+                if res_rst["success"]:
+                    st.success(res_rst["message"])
+                else:
+                    st.error(res_rst["error"])
     else:
         st.write(f"Logged in as: **{current_user['email']}**")
         is_pro = current_user.get("subscription_tier") == "pro"
