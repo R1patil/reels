@@ -18,6 +18,7 @@ from auth_service import (
     is_supabase_enabled
 )
 from billing_service import PLAN_DETAILS, get_checkout_url, verify_promo_code
+from razorpay_service import create_order, verify_payment_signature, get_razorpay_credentials
 
 CONFIG_FILE = "config.json"
 
@@ -131,22 +132,47 @@ if "logged_in_user" not in st.session_state:
 
 current_user = st.session_state.get("logged_in_user")
 
-# Automated Payment Success Handler (When user returns from LemonSqueezy / Stripe)
+# ==============================================================
+# RAZORPAY STANDARD PAYMENT SIGNATURE VERIFICATION (BACKEND)
+# ==============================================================
 params = st.query_params
-if params.get("payment_success") == "true" or "session_id" in params:
-    target_email = params.get("email") or (current_user["email"] if current_user else None)
-    if target_email:
-        upgrade_user_to_pro(target_email)
+if "razorpay_signature" in params and "razorpay_order_id" in params and "razorpay_payment_id" in params:
+    r_order_id = params.get("razorpay_order_id")
+    r_payment_id = params.get("razorpay_payment_id")
+    r_signature = params.get("razorpay_signature")
+    r_email = params.get("email") or (current_user["email"] if current_user else None)
+    
+    # Verify HMAC-SHA256 signature
+    is_valid = verify_payment_signature(r_order_id, r_payment_id, r_signature)
+    st.query_params.clear()
+    
+    if is_valid:
+        if r_email:
+            upgrade_user_to_pro(r_email)
         st.balloons()
-        st.success(f"🎉 Payment verified! Account '{target_email}' has been upgraded to Creator Pro!")
-        st.query_params.clear()
+        st.success(f"🎉 Payment Verified (Payment ID: {r_payment_id})! Account '{r_email}' upgraded to Creator Pro!")
         if current_user:
             current_user["subscription_tier"] = "pro"
             current_user["extractions_limit"] = 999999
             st.session_state["logged_in_user"] = current_user
         st.rerun()
+    else:
+        st.error("❌ Payment Signature Verification Failed! Signature mismatch. Your account was not upgraded.")
 
-# Refresh current user data from Supabase
+# Generic payment success fallback
+elif params.get("payment_success") == "true":
+    target_email = params.get("email") or (current_user["email"] if current_user else None)
+    if target_email:
+        upgrade_user_to_pro(target_email)
+        st.balloons()
+        st.success(f"🎉 Upgraded to Creator Pro!")
+        st.query_params.clear()
+        if current_user:
+            current_user["subscription_tier"] = "pro"
+            st.session_state["logged_in_user"] = current_user
+        st.rerun()
+
+# Refresh current user data
 if current_user:
     updated = get_user_by_email(current_user["email"])
     if updated:
@@ -177,6 +203,89 @@ with nav_col2:
                 st.rerun()
     else:
         st.info("Log in or create an account to start.")
+
+# Helper to render Razorpay Standard Checkout Modal
+def render_razorpay_modal(amount_inr=999, user_email=""):
+    amount_paise = int(amount_inr * 100)
+    try:
+        order_res = create_order(amount_paise, currency="INR")
+        if not order_res.get("success"):
+            st.error(f"Failed to create Razorpay Order: {order_res.get('error')}")
+            return
+            
+        key_id = order_res["key_id"]
+        order_id = order_res["order_id"]
+        
+        checkout_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        </head>
+        <body style="font-family: sans-serif; text-align: center; margin: 0; padding: 10px;">
+            <button id="rzp-button" style="
+                background: linear-gradient(135deg, #f59e0b, #ef4444);
+                color: white;
+                border: none;
+                padding: 14px 28px;
+                border-radius: 8px;
+                font-size: 1.1rem;
+                font-weight: bold;
+                cursor: pointer;
+                box-shadow: 0 4px 14px rgba(239,68,68,0.4);
+                width: 100%;
+            ">
+                ⚡ Pay ₹{amount_inr} with Razorpay (UPI, GPay, Cards)
+            </button>
+            <div id="error-msg" style="color: red; margin-top: 10px; font-size: 0.9rem; display: none;"></div>
+
+            <script>
+            var options = {{
+                "key": "{key_id}",
+                "amount": {amount_paise},
+                "currency": "INR",
+                "name": "ReelViral AI",
+                "description": "Creator Pro Monthly Subscription",
+                "order_id": "{order_id}",
+                "prefill": {{
+                    "email": "{user_email}"
+                }},
+                "theme": {{
+                    "color": "#FF4B4B"
+                }},
+                "handler": function (response){{
+                    var redirectUrl = window.top.location.origin + window.top.location.pathname + 
+                        '?razorpay_order_id=' + encodeURIComponent(response.razorpay_order_id) +
+                        '&razorpay_payment_id=' + encodeURIComponent(response.razorpay_payment_id) +
+                        '&razorpay_signature=' + encodeURIComponent(response.razorpay_signature) +
+                        '&email=' + encodeURIComponent("{user_email}");
+                    window.top.location.href = redirectUrl;
+                }},
+                "modal": {{
+                    "ondismiss": function(){{
+                        console.log("Razorpay checkout modal closed by user.");
+                    }}
+                }}
+            }};
+
+            var rzp = new Razorpay(options);
+            rzp.on('payment.failed', function (response){{
+                var errDiv = document.getElementById('error-msg');
+                errDiv.innerText = "Payment Failed: " + response.error.description;
+                errDiv.style.display = "block";
+            }});
+
+            document.getElementById('rzp-button').onclick = function(e){{
+                rzp.open();
+                e.preventDefault();
+            }};
+            </script>
+        </body>
+        </html>
+        """
+        st.components.v1.html(checkout_html, height=80)
+    except Exception as e:
+        st.error(f"Razorpay Checkout Error: {str(e)}")
 
 # Sidebar: Authentication & Configuration
 with st.sidebar:
@@ -212,14 +321,8 @@ with st.sidebar:
         
         if not is_pro:
             st.warning("You are on the **Starter (Free)** plan.")
-            checkout_url = get_checkout_url(current_user["email"])
-            st.markdown(f"""
-            <a href="{checkout_url}" target="_blank">
-                <button style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; border: none; padding: 12px 18px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer;">
-                    ⚡ Upgrade to Pro — ₹999/mo (UPI / Card)
-                </button>
-            </a>
-            """, unsafe_allow_html=True)
+            st.markdown("### ⚡ Upgrade to Pro (₹999/mo)")
+            render_razorpay_modal(amount_inr=999, user_email=current_user["email"])
             
             with st.expander("🎟 Have a Promo/Founder Code?"):
                 p_code = st.text_input("Enter code:", key="promo_input")
@@ -234,14 +337,14 @@ with st.sidebar:
             st.success("✓ Creator Pro Active — Unlimited HD Extractions")
 
     st.markdown("---")
-    st.subheader("🇮🇳 Payment Gateway (Razorpay / UPI / Cards)")
-    with st.expander("Configure Payment Link"):
-        st.caption("Paste your Razorpay, Cosmofeed, Cashfree, or Stripe Payment Link:")
-        p_link = st.text_input("Payment Link (UPI/Cards):", value=cfg.get("checkout_url", ""), placeholder="https://rzp.io/l/... or https://cosmofeed.com/...")
-        if p_link != cfg.get("checkout_url", ""):
-            cfg["checkout_url"] = p_link
-            save_config(cfg)
-            st.success("Payment link saved!")
+    st.subheader("💳 Razorpay Integration")
+    with st.expander("View Razorpay Status"):
+        r_id, r_sec = get_razorpay_credentials()
+        if r_id:
+            st.success(f"✓ Key ID: `{r_id[:12]}...`")
+            st.caption("Standard Web Checkout modal active (HMAC-SHA256 signature verification enabled).")
+        else:
+            st.warning("Razorpay credentials missing from .env or Secrets.")
 
     st.markdown("---")
     st.subheader("⚙️ AI Model")
@@ -342,7 +445,6 @@ if current_user:
     limit = current_user.get("extractions_limit", 2)
     if not is_pro and used >= limit:
         can_extract = False
-        checkout_url = get_checkout_url(current_user["email"])
         st.markdown(f"""
         <div class="paywall-card">
             <h2 style="color: #e11d48; margin-top: 0;">🛑 Free Plan Limit Reached ({used}/{limit} videos)</h2>
@@ -350,14 +452,11 @@ if current_user:
                 You've used all 2 free extractions for this month.<br>
                 Upgrade to <b>Creator Pro</b> for unlimited video extractions, 720p HD clip downloads, and priority processing.
             </p>
-            <a href="{checkout_url}" target="_blank">
-                <button style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; border: none; padding: 14px 32px; border-radius: 8px; font-size: 1.15rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(239,68,68,0.3);">
-                    ⚡ Upgrade to Creator Pro — ₹999/month ($19)
-                </button>
-            </a>
-            <p style="font-size: 0.85rem; color: #9ca3af; margin-top: 10px;">Accepts UPI (Google Pay, PhonePe, Paytm), NetBanking, Debit & Credit Cards.</p>
         </div>
         """, unsafe_allow_html=True)
+        # Render the Standard Razorpay Checkout Button right inside the paywall
+        render_razorpay_modal(amount_inr=999, user_email=current_user["email"])
+        st.markdown("<p style='text-align: center; font-size: 0.85rem; color: #9ca3af;'>Powered by Razorpay Standard Checkout. Instant activation.</p>", unsafe_allow_html=True)
 
 # Execution Button
 analyze_btn = st.button("🚀 Extract High-Virality Reels", type="primary", use_container_width=True, disabled=not can_extract)
