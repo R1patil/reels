@@ -382,13 +382,20 @@ with st.sidebar:
         index=0
     )
     
-    gemini_key = cfg.get("gemini_api_key", "")
+    gemini_key = ""
+    if hasattr(st, "secrets") and "GEMINI_API_KEY" in st.secrets:
+        gemini_key = st.secrets["GEMINI_API_KEY"]
+    if not gemini_key:
+        gemini_key = os.environ.get("GEMINI_API_KEY", "") or cfg.get("gemini_api_key", "")
+
     if ai_choice == "Google Gemini (Included / Free)":
-        gem_input = st.text_input("Gemini API Key:", value=gemini_key, type="password")
-        if gem_input != gemini_key:
-            cfg["gemini_api_key"] = gem_input
-            save_config(cfg)
-            gemini_key = gem_input
+        st.success("✓ AI Engine Active (Included — No setup required)")
+        with st.expander("⚙ Custom Gemini Key (Optional)"):
+            gem_input = st.text_input("Override Gemini API Key:", value=gemini_key, type="password")
+            if gem_input and gem_input != gemini_key:
+                cfg["gemini_api_key"] = gem_input
+                save_config(cfg)
+                gemini_key = gem_input
 
     # Supabase Settings
     with st.expander("⚡ Cloud Database (Supabase)"):
