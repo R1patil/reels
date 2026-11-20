@@ -1,0 +1,22 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local downloads and temporary videos
+downloads_cache/
+output_reels/
+*.mp4
+*.m4a
+*.webm
+
+# Local SQLite Database
+saas_database.db
+
+# Sensitive local keys (deploy via Streamlit Secrets instead)
+config.json
+.env

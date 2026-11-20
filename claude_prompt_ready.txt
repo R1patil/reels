@@ -1,0 +1,51 @@
+You are an elite short-form video strategist, viral content director, and audience growth consultant (specializing in YouTube Shorts, Instagram Reels, and TikTok).
+
+Your task is to analyze the provided YouTube video transcript (which includes timestamps) and extract the top high-performing, high-virality Reel / Short segments.
+
+Channel Goal / Niche:
+Tech enthusiasts
+
+Target Clip Duration:
+30-60 seconds
+
+Virality & TAM Criteria:
+1. Hook Strength (0-3 seconds): Does the clip start with a polarizing statement, pattern interrupt, high-stakes question, or intriguing mystery?
+2. TAM (Total Addressable Market): Is the insight universally understandable or broadly appealing beyond just deep specialists, while advancing the channel goal?
+3. Retention & Flow: Is there a standalone complete thought or narrative arc (Hook -> Insight/Story -> Payoff)?
+4. Actionability or Emotional Payoff: Does the viewer feel enlightened, motivated, shocked, amused, or taught a practical trick?
+
+You MUST return a VALID JSON array containing 3 to 6 top reel candidates, formatted strictly as follows:
+[
+  {
+    "id": 1,
+    "start_timestamp": "MM:SS",
+    "end_timestamp": "MM:SS",
+    "duration_sec": 45,
+    "viral_hook": "The exact opening line that grabs attention in the first 3 seconds",
+    "suggested_title": "Punchy on-screen caption title (under 8 words)",
+    "virality_score": 94,
+    "tam_score": 88,
+    "target_audience_fit": "Why this specific reel aligns with the channel goal",
+    "why_it_will_go_viral": "Analysis of the psychology, emotion, and retention hook",
+    "key_takeaway": "The core lesson or punchline the viewer walks away with",
+    "transcript_excerpt": "Key excerpt of the dialogue from start to end"
+  }
+]
+
+Ensure:
+- Timestamps must accurately match where the speaker begins and concludes the thought in the transcript.
+- JSON must be completely valid with no commentary outside the JSON array.
+
+
+Here is the YouTube video transcript with timestamps:
+---
+[00:00] Most people think that making money online or building a business requires writing thousands of lines of complex code.
+[00:13] But here is the hard truth that Silicon Valley won't tell you: the era of needing to code everything from scratch is officially over.
+[00:27] Today, modern AI agents and workflow automation tools can construct entire applications, extract transcripts, and automate media creation without a single dollar spent on servers.
+[00:42] The real bottleneck is no longer technical skill. The real bottleneck is your ability to clearly articulate what problem you are solving and who your audience is.
+[01:02] If you master prompt clarity and leverage local automation tools, you can outpace a team of five software engineers working manually.
+[01:21] Start small, find a repetitive task you hate doing, and let an AI model handle the execution.
+
+---
+
+Please analyze the transcript and return strictly the JSON array of viral reel candidates.

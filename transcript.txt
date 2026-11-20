@@ -1,0 +1,187 @@
+[00:02] Hello everyone myself.
+[00:07] I'm currently
+[00:11] working as a software developer back.
+[00:17] Uh I want to discuss today
+[00:21] one topic related to the
+[00:24] uh
+[00:28] problem that is time complexity. uh that
+[00:32] how we can solve the DSA
+[00:35] problem using the
+[00:39] constraint given constraint.
+[00:41] Okay, before starting the before
+[00:43] starting to the constraint
+[00:46] uh I want to discuss about the
+[00:50] this problem like I I will simply
+[00:54] we will solve this problem just like
+[00:57] it's asking to find the highest
+[01:01] altitude.
+[01:03] Okay, can read this question. They are
+[01:05] asking you need to start with the
+[01:10] zero
+[01:11] and that will be the increment order
+[01:14] need to get the highest
+[01:18] peak. Okay. They are given this scale
+[01:23] output and explanation.
+[01:25] Okay. But you can see here the constants
+[01:29] are n= to gain.length
+[01:32] length and another one is n uh less than
+[01:36] or equal to 100. Means whenever we any
+[01:40] of the problem given we need to check
+[01:42] the uh highest
+[01:46] like user input the input uh like we
+[01:50] need to f the highest user input like
+[01:53] how much they are giving the input
+[01:54] constraints they're telling to
+[01:57] giving n is less than or equal to 100
+[02:01] nothing but the 99 then uh which
+[02:05] algorithm we we should need to use or
+[02:08] which which technique like target
+[02:10] complexity how much we need to
+[02:14] uh achieve for given the end. I think we
+[02:19] need uh like that problem we need to go
+[02:22] to the
+[02:25] uh
+[02:28] uh okay we will solve this first problem
+[02:31] then let us uh we will discuss about
+[02:34] that one. Okay, they are giving they
+[02:37] need to return the integer.
+[02:41] Yeah, I will max
+[02:46] max.
+[02:47] I will add max. Okay. Three
+[02:52] count
+[02:55] some
+[03:01] i
+[03:05] again in given given array given list we
+[03:11] will go one by one and adding
+[03:14] adding and we will check that one. Okay.
+[03:19] sum plus =
+[03:24] I
+[03:25] and
+[03:28] we need to
+[03:33] I=
+[03:41] Let's
+[03:43] call
+[03:59] max.
+[04:01] Okay, like this we will
+[04:04] count. We will start with the zero count
+[04:08] and we will increase with minus 5. We
+[04:11] will add that one and it will be the
+[04:13] result in 0 + - 5 - 5 and again we will
+[04:18] go to the next step uh - 5 + 1 - 4 like
+[04:23] that we will go to that and we need to
+[04:25] find the highest latitude of the given
+[04:28] uh given list. Okay, we will draw this
+[04:32] one.
+[04:35] Uh, it's it's done successfully. We need
+[04:39] we will submit this one%
+[04:45] is already correct time complexity. But
+[04:49] discussing about this time complexity is
+[04:51] big of n².
+[04:53] A big of n not a n square. How need how
+[04:58] we need to know about this is the big of
+[05:01] n or n square that that is the whenever
+[05:06] whenever we need to solve in the uh like
+[05:09] dsa in the john or rubber they will give
+[05:12] 45 minutes we need to solve in uh into
+[05:17] problem that time we need to understand
+[05:19] such a way that we will go we will read
+[05:22] first 2 minutes problem then we will go
+[05:24] the constraints then we will understand
+[05:27] the constraints based on the constraints
+[05:29] we can uh target our the time complexity
+[05:33] then we will understand how it's work
+[05:35] okay I will tell like if n is in the in
+[05:41] a computer and the how it's uh work like
+[05:45] that uh 100 million per second
+[05:49] instruction it will work then the lead
+[05:51] code or hacker and they will set as a
+[05:53] target if we cross if the question is
+[05:57] asking to we need to solve in big of n
+[05:59] login but we we we solve in big of n
+[06:02] square it will not work because that
+[06:05] that uh user input given that the
+[06:09] problem input no we it should be the
+[06:13] correctly matching with that our 100
+[06:15] million per second instruction
+[06:18] then it will work otherwise it will not
+[06:20] work we'll go to this dashboard just I
+[06:23] will give the user input like If the
+[06:27] given us were less than 100 we will give
+[06:30] 99 then we will get to know that we
+[06:33] cannot solve in the big n factorial we
+[06:36] cannot solve in the big of string but we
+[06:39] can solve in this all like big is in big
+[06:43] of n because 99 operation it will take
+[06:46] it will within the budget it will work
+[06:49] but but you can see here other it will
+[06:52] not work okay uh but you can see Here
+[06:55] below 10 nothing but we can have the
+[06:58] limited number of uh user input only the
+[07:01] less than the 10 nothing but the 1 to 9
+[07:04] that time you can use the bit masking or
+[07:07] uh that type of the
+[07:09] techniques algorithm to solve the user
+[07:12] input like traveling salesperson and
+[07:15] other things it already there like this
+[07:18] uh less than 2001 abs and less than 100
+[07:22] uh this phone and less than 2,000
+[07:24] bubbles at insertion sort because how
+[07:27] it's work? No, if you your PN is less
+[07:29] than 2 2,000 then if you
+[07:34] like n into n² nothing but the 10 to six
+[07:39] it will budget within the limited how
+[07:42] will 10 you know like 100 million per
+[07:46] second like that we can understand how
+[07:48] the
+[07:50] complexity of dashboard will work and
+[07:52] based on that we can change we can
+[07:55] change the input if the user input is 10
+[07:58] to
+[08:00] five 10 to 5 then we need to solve in
+[08:05] the big n login and big of n and login
+[08:08] only because other are the excess we not
+[08:11] solve in that then we need to think
+[08:13] about which algorithm we need to solve
+[08:15] and how we need to solve I will share
+[08:17] this in the description this uh html you
+[08:21] can go through that and I want to talk
+[08:24] about another one Another uh another one
+[08:28] is interesting topic about the this all
+[08:30] are what we solve know this one is a uh
+[08:34] p type problem like polomial not a np
+[08:38] not a nondeterministic pol
+[08:42] in a modern in a computer science that
+[08:45] unsolved problem is like p= equal to np
+[08:49] or p not equal to np we did not solve
+[08:52] that problem that is unsolved problem
+[08:55] Because no one is proved that it are not
+[08:59] equal or equal because how is the P is
+[09:02] nothing but the if the how the problem
+[09:05] computer can solve within the given time
+[09:08] or within the given in uh instruction
+[09:13] but NP nothing but the the we give the
+[09:16] instruction to the computer how it can
+[09:19] solve within the time
+[09:22] that's two not equal or equal that is
+[09:26] unsolved problem like that whenever I go
+[09:28] to that I understand that one okay uh
+[09:33] you can see here if I push here n and np
+[09:40] unsolved
+[09:42] problem
+[09:44] can see here it will show this problem
+[09:46] most famous unsolved problem question
+[09:48] composion asking if every problem whose
+[09:50] solution can be verified if you have
+[09:53] this solved they will give you 1 million
+[09:55] on T. Okay. Thank you for watching this
+[09:59] video. If you have any doubts, can you
+[10:03] in the comment you can we will discuss
+[10:05] about next topic about the we in the
+[10:08] next video we will discuss about the
+[10:10] we'll go one by one of P factorial and
+[10:12] of tourist within that limited number of
+[10:15] user input. How can we can achieve a
+[10:18] traveling uh traveling salesperson and
+[10:20] uh bit masking we'll discuss in the next
+[10:23] next uh topic. Okay. Thank you for
+[10:26] watching.
